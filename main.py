@@ -1,42 +1,27 @@
-from func import *
-from typing import List
-from time import time
+from utils import *
 
 if __name__ == '__main__':
-    
-    search_range: List[int] = [int(string) for string in input().split(' ')]
 
-    file = open('badnumbers.txt', 'r')
+    start = get_start('vars.txt')
+    vars = open('vars.txt', 'w')
+    current_num = start
+    for num in range(start, start+int(input('How many numbers to iterate through: '))):
 
-    for num in range(search_range[0], search_range[1]+1):
-        current_num = num
+        current_num = num+1
+        new_loop = []
+
         while num != 1:
 
-            for line in file:
-                    if num == line:
-                        num = 1
-                    
+            new_loop.append(num)
+            if len(new_loop) > len(set(new_loop)):
+                print(current_num)
 
-            if num & (num-1) == 0:
-                break
+            # num set to 1 to break loop if number is < current number 
+            # else it applies the conjecture
+            num = 1 if is_previously_checked(num, current_num) else apply_conjecture(num)
+            
+                
+    vars.write(f'{current_num}')
+    vars.close()
 
-            elif is_even(num):
-                num = int(num/2)
-                for line in file:
-                    if num == line:
-                        break
-                    file.write(str(num))
-
-            elif not is_even(num):
-                num = 3*num + 11
-                for line in file:
-                    if num == line:
-                        break
-                    file.write(str(num))
-
-
-
-        
-        print(f'{current_num}: loops 4, 2, 1...')
-    file.close()
-        
+summary(start, current_num)
