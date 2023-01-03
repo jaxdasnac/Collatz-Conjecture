@@ -3,11 +3,10 @@ from typing import List
 def is_even(num: int) -> bool: 
     return False if num & 1 else True
 
-def get_start(filename) -> int:
-    file = open(filename, 'r')
-    start = int(file.readline())
-    file.close()
-    return start
+def get_start_num(filename) -> int:
+    with open(filename, 'r') as file:
+        num = int(file.readline())
+    return num
 
 def apply_conjecture(num: int) -> int:
     if num & (num-1) == 0:
@@ -27,7 +26,8 @@ def is_previously_checked(num: int, current_num: int) -> bool:
 
 def summary(start, current_num):
     summary = f"""    =====Summary=====
-    Range Searched: {start} to {current_num}
+    Start Number:     {start} 
+    End Number:       {current_num}
     Numbers Searched: {current_num-start}
 
     
