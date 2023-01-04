@@ -1,35 +1,38 @@
 from typing import List
+from tqdm import tqdm
 
 def is_even(num: int) -> bool: 
     return False if num & 1 else True
 
-def get_start_num(filename) -> int:
-    with open(filename, 'r') as file:
-        num = int(file.readline())
-    return num
-
 def apply_conjecture(num: int) -> int:
-    if num & (num-1) == 0:
-        return 1
+    return int(num/2) if is_even(num) else 3*num + 1
 
-    elif is_even(num):
-        return int(num/2)
-
-    elif not is_even(num):
-        return 3*num + 1
 
 def is_previously_checked(num: int, current_num: int) -> bool:
-    if num < current_num:
-        return True
-    else:
-        return False
+    return num < current_num
 
-def summary(start, current_num):
-    summary = f"""    =====Summary=====
-    Start Number:     {start} 
-    End Number:       {current_num}
-    Numbers Searched: {current_num-start}
+def get_start_num(filename: str = 'start_num.txt') -> int:
+    try:
+        with open(filename, 'r') as file:
+            num = int(file.readline())
+        return num
+    except (IOError, ValueError):
+        print(f'Error reading {filename}')
+        return 1
 
-    
-    """
-    print(summary)
+class Summary():
+    def __init__(self, time_elapsed, start_num, final_num, new_loop) -> None:
+        self.time_elapsed = time_elapsed
+        self.start_num = start_num
+        self.final_num = final_num-1
+        self.new_loop = new_loop if new_loop != [] else 'All Loops End in 4, 2, 1...'
+
+    def __str__(self):
+        return f"""
+=====Summary=====
+Time Elapsed:     {self.time_elapsed:.2f}s
+Start Number:     {self.start_num} 
+End Number:       {self.final_num}
+New Start Number: {self.final_num+1}
+Numbers Searched: {self.final_num-self.start_num}
+New Loop:         {self.new_loop}"""
