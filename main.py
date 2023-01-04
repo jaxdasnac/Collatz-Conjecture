@@ -1,44 +1,27 @@
 from utils import *
-import time
 
 def main():
-    try:
-        start_num = get_start_num('vars.txt')
-        final_num = start_num + 1 + abs(int(input('How many Numbers to Search: ')))
-        start_time = time.perf_counter()
-        new_loop = []
+    while True:
+        mode = input('Select Mode (1 -> 10), Quit (q), or List Modes (lm)? ').replace(' ', '')
+        if mode == '1':
+            preformance()
 
-        for num in tqdm(range(start_num, final_num), unit='checks'):
-            current_num = num
-            print(current_num)
-            while num != 4:
+        elif mode == '2':
+            connected_dot_graph()
+            
+        elif mode.lower()[0] == 'q':
+            break
 
-                if len(new_loop) > len(set(new_loop)):
-                    time_elapsed = time.perf_counter() - start_time
-                    print(Summary(time_elapsed, start_num, final_num, new_loop))
-                    with open('vars.txt', 'w') as file:
-                        file.write(str(current_num))
+        elif mode.lower() == 'lm':
+            print('''
+1. Preformance Mode
+2. Connected Dot Graph
+''')
 
-                new_loop.append(num)
-                num = 4 if is_previously_checked(num, current_num) else apply_conjecture(num)
-            new_loop = []
-        
-        time_elapsed = time.perf_counter() - start_time
-        print(Summary(time_elapsed, start_num, final_num, new_loop))
-        with open('vars.txt', 'w') as file:
-            file.write(str(current_num))
+        else:
+            print('Please Select an Option')
 
-    except KeyboardInterrupt:
-        new_loop = []
-        time_elapsed = time.perf_counter() - start_time
-        print(Summary(time_elapsed, start_num, final_num, new_loop))
-        with open('vars.txt', 'w') as file:
-            file.write(str(current_num))
-    
-    except ValueError:
-        print('Only INTERGERS are ACCEPTED!')
-
-   
+      
 
 if __name__ == '__main__':
     main()
