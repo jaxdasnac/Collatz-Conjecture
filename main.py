@@ -7,7 +7,7 @@ def main():
             preformance()
 
         elif mode == '2':
-            connected_dot_graph()
+            connected_dot_graph(get_start_num('vars.txt'))
             
         elif mode.lower()[0] == 'q':
             break
@@ -20,8 +20,6 @@ def main():
 
         else:
             print('Please Select an Option')
-
-      
 
 if __name__ == '__main__':
     main()

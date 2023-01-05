@@ -1,6 +1,7 @@
 from time import perf_counter, sleep
 from tqdm import tqdm
 from matplotlib import pyplot as plt
+from random import uniform
 
 def is_even(num: int) -> bool: 
     #Returns True if num is even, False otherwise.
@@ -32,14 +33,14 @@ def preformance():
         start_num = get_start_num('vars.txt')
         final_num = start_num + 1 + int(input('How many Numbers to Search: '))
         start_time = perf_counter()
-        new_loop = []
+        new_loop = [start_num]
         for num in tqdm(range(start_num, final_num), unit='checks'):
             current_num = num
             while num != 4:
 
                 if len(new_loop) > len(set(new_loop)):
                     time_elapsed = perf_counter() - start_time
-                    print(Summary(time_elapsed, start_num, final_num, new_loop))
+                    print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
                     with open('vars.txt', 'w') as file:
                         file.write(str(current_num))
 
@@ -48,7 +49,7 @@ def preformance():
             new_loop = []
         
         time_elapsed = perf_counter() - start_time
-        print(Summary(time_elapsed, start_num, final_num, new_loop))
+        print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
         with open('vars.txt', 'w') as file:
             file.write(str(current_num))
     
@@ -62,29 +63,40 @@ def preformance():
     except ValueError:
           print('Only INTERGERS are ACCEPTED!')
 
-def connected_dot_graph():
+def connected_dot_graph(get_sn):
     try:
-        start_num = get_start_num('var')
-        final_num = start_num + 1 + int(input('How many Numbers to Search: '))
+        start_num = get_sn
+        final_num = start_num + int(input('How many Numbers to Search: '))
         start_time = perf_counter()
-        new_loop = []
-        for num in tqdm(range(start_num, final_num), unit='checks'):
+        new_loop = [start_num]
+        sequence = []
+        colors = []
+        for num in tqdm(range(start_num, final_num), unit='dots'):
             current_num = num
-            step = 0
+            #color set
+            color = (uniform(0.4, 0.9), uniform(0.4, 0.9), uniform(0.4, 0.9))
             while num != 1:
                 new_loop.append(num)
-                
                 num = apply_conjecture(num)
                 
-                plt.scatter(step, num)
+                
+            new_loop.append(num)
+            #current loop drawn
+            for i in range(len(new_loop)):
+                plt.plot(range(i+1), new_loop[0:i+1], color=color, marker='o')
                 plt.pause(0.05)
 
-                step+=1
-                
+            sequence.append(new_loop)
+            colors.append(color)
             new_loop = []
+            #cleared
+            plt.cla()
+            #all loops drawn
+            for i, loop in enumerate(sequence):
+                plt.plot(range(len(loop)), loop, color=colors[i], marker='o')
         
         time_elapsed = perf_counter() - start_time
-        print(Summary(time_elapsed, start_num, final_num, new_loop))
+        print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
         plt.show()
         with open('vars.txt', 'w') as file:
             file.write(str(current_num))
@@ -92,7 +104,7 @@ def connected_dot_graph():
     except KeyboardInterrupt:
         new_loop = []
         time_elapsed = perf_counter() - start_time
-        print(Summary(time_elapsed, start_num, final_num, new_loop))
+        print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
         with open('vars.txt', 'w') as file:
             file.write(str(current_num))
     
@@ -100,10 +112,11 @@ def connected_dot_graph():
           print('Only INTERGERS are ACCEPTED!')
 
 class Summary():
-    def __init__(self, time_elapsed, start_num, final_num, new_loop) -> None:
+    def __init__(self, time_elapsed, start_num, current_num, final_num, new_loop) -> None:
         self.time_elapsed = time_elapsed
         self.start_num = start_num
-        self.final_num = final_num-1
+        self.current_num = current_num
+        self.final_num = final_num
         self.new_loop = new_loop if new_loop != [] else 'All Loops End in 4, 2, 1...'
 
     def __str__(self):
@@ -111,8 +124,8 @@ class Summary():
 =====Summary=====
 Time Elapsed:     {self.time_elapsed:.2f}s
 Start Number:     {self.start_num} 
-End Number:       {self.final_num}
-New Start Number: {self.final_num+1}
-Numbers Searched: {self.final_num-self.start_num}
+End Number:       {self.final_num-1}
+New Start Number: {self.final_num}
+Numbers Searched: {self.current_num-self.start_num}
 New Loop:         {self.new_loop}
 """
