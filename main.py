@@ -2,13 +2,10 @@ from utils import *
 
 def main():
     while True:
-        mode = input('Select Mode (1 -> 10), Quit (q), or List Modes (lm)? ').replace(' ', '')
-        if mode == '1':
-            preformance()
+        mode = int(input('Select Mode (1 -> 10), Quit (q), or List Modes (lm)? ').replace(' ', ''))
+        if type(mode) == int:
+            Conjecture(mode=mode, number_range=(1, 10))
 
-        elif mode == '2':
-            connected_dot_graph(get_start_num('vars.txt'))
-            
         elif mode.lower()[0] == 'q':
             break
 
