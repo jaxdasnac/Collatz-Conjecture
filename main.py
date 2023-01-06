@@ -4,7 +4,12 @@ def main():
     while True:
         mode = int(input('Select Mode (1 -> 10), Quit (q), or List Modes (lm)? ').replace(' ', ''))
         if type(mode) == int:
-            Conjecture(mode=mode, number_range=(1, 10))
+
+            graph = Conjecture(number_range=(get_start_num('vars.txt'), 20), rand_color=True, make_sequence=True)
+            print(graph)
+
+            if mode == 2:
+                graph.draw_graph()
 
         elif mode.lower()[0] == 'q':
             break

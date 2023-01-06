@@ -15,142 +15,91 @@ def is_previously_checked(num: int, current_num: int) -> bool:
     # Returns True if num has already been checked in the current loop, False otherwise.
     return num < current_num
 
-def get_start_num(filename: str = 'start_num.txt') -> int:
-    """Gets the starting number for the program from the specified file.
-    
-    If the file does not exist or there is an error reading it, returns 1.
-    """
-    try:
-        with open(filename, 'r') as file:
-            num = int(file.readline())
-        return num
-    except (IOError, ValueError):
-        print(f'Error reading {filename}')
-        return 1
-
-
-#def connected_dot_graph(get_sn):
-    try:
-        start_num = get_sn
-        final_num = start_num + int(input('How many Numbers to Search: '))
-        start_time = time()
-        new_loop = [start_num]
-        sequence = []
-        colors = []
-        for num in tqdm(range(start_num, final_num), unit='lines'):
-            current_num = num
-            #color set
-            color = (uniform(0.4, 0.9), uniform(0.4, 0.9), uniform(0.4, 0.9))
-            while num != 1:
-                new_loop.append(num)
-                num = apply_conjecture(num)
-                
-                
-            new_loop.append(num)
-            #current loop drawn
-            for i in range(len(new_loop)):
-                plt.plot(range(i+1), new_loop[0:i+1], color=color, marker='o')
-                plt.pause(0.05)
-
-            sequence.append(new_loop)
-            colors.append(color)
-            new_loop = []
-            #cleared
-            plt.cla()
-            #all loops drawn
-            for i, loop in enumerate(sequence):
-                plt.plot(range(len(loop)), loop, color=colors[i], marker='o')
-        
-        time_elapsed = time() - start_time
-        print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
-        plt.show()
-        with open('vars.txt', 'w') as file:
-            file.write(str(current_num))
-    
-    except KeyboardInterrupt:
-        new_loop = []
-        time_elapsed = time() - start_time
-        print(Summary(time_elapsed, start_num, current_num, final_num, new_loop))
-        with open('vars.txt', 'w') as file:
-            file.write(str(current_num))
-    
-    except ValueError:
-          print('Only INTERGERS are ACCEPTED!')
+def get_start_num(filename):
+        try:
+            with open(filename, 'r') as file:
+                num = int(file.readline())
+            return num
+        except (IOError, ValueError):
+            print(f'Error reading {filename}')
+            return 1
 
 class Conjecture():
+    """penis"""
+    def __init__(self, number_range=(1, 10), make_sequence=False, unit='checks', rand_color=False) -> None:
+        """number_range: must be a tuple object containing a start integer and how many integers to loop through
+make_sequence: must be set to True to make a graph, otherwise set to False for speed
+unit: this will change the units on the tqdm progress bar
+rand_color: defualt False will set graph color to black, setting to True will make each graph line be a different color"""
+        #start and end num
+        self.start_num = number_range[0]
+        self.final_num = self.start_num+number_range[-1]
 
-    def __init__(self, mode=1, filename='start_num.txt', number_range=None, save_num=False, make_sequence=False, unit='checks', draw_graph=False) -> None:
-        self.mode = mode
-        self.filename = filename
-        self.start_num = get_start_num(self.filename) if get_start_num(self.filename) else number_range[0]
-        self.final_num = number_range[1]
-        self.save_num = save_num
+        #timers
         self.start_time: float = time()
         self.time_elapsed: float = time() - self.start_time
-        self.new_loop = [self.start_num]
+
+        #loop and sequence of loops
+        self.new_loop = []
         self.sequence = [] if make_sequence else None
+
+        #tqdm load bar units
         self.unit: str = unit
-        self.colors = []
+
+        #graph color
+        self.rand_color = rand_color
 
         self.run_conjecture()
-
-        self.summary()
-
-        if draw_graph:
-            self.draw_graph()
     
     def run_conjecture(self):
+
         for num in tqdm(range(self.start_num, self.final_num), unit=self.unit):
 
-            if self.sequence == []:
-                self.sequence.append(self.new_loop)
+            self.new_loop.append(num)
+            
+            while num != 1:
+                if len(self.new_loop) > len(set(self.new_loop)):
+                    break
+
+                num = apply_conjecture(num)
+                self.new_loop.append(num)
+
+            if len(self.new_loop) > len(set(self.new_loop)):
+                    break
+
+            self.sequence.append(self.new_loop)
 
             self.new_loop = []
 
-            self.new_loop.append(num)
+        self.time_elapsed = time() - self.start_time
 
-            while num != 4:
-
-                if len(self.new_loop) > len(set(self.new_loop)):
-
-                    if self.save_num:
-                        with open(self.filename, 'w') as file:
-                            file.write(str(self.new_loop[-1]))
-
-                self.new_loop.append(num)
-
-                num = 4 if is_previously_checked(num, self.new_loop[-1]) else apply_conjecture(num) if self.mode in [1] else apply_conjecture(num)
             
-            
-            
-
-                        
     
-    def summary(self):
-        return print(f"""
+    def __str__(self):
+        return f"""
 =====Summary=====
 Time Elapsed:     {self.time_elapsed:.2f}s
 Start Number:     {self.start_num} 
 End Number:       {self.final_num-1}
-New Start Number: {self.final_num}
-Numbers Searched: {self.new_loop[-1]-self.start_num}
-New Loop:         {self.new_loop}
-""")
+Numbers Searched: {self.final_num-self.start_num}
+New Loop:         {self.new_loop if self.new_loop != [] else 'All Numbers Loop 4, 2, 1...'}
+"""
 
-    def get_start_num(self) -> int:
-        """Gets the starting number for the program from the specified file.
+    def draw_graph(self):
         
-        If the file does not exist or there is an error reading it, returns 1.
-        """
-        try:
-            with open(self.filename, 'r') as file:
-                num = int(file.readline())
-            return num
-        except (IOError, ValueError):
-            print(f'Error reading {self.filename}')
-            return False
+        colors = [(uniform(0.4, 0.9), uniform(0.4, 0.9), uniform(0.4, 0.9)) if self.rand_color else 'black' for _ in range(len(self.sequence))]
 
-    def make_graph(self):
-        pass
+        #loop over sequence
+        for loop_number, loop in enumerate(self.sequence):
+            #draw current line
+            for i in range(len(loop)):
+                plt.plot(range(len(loop[:i])), loop[:i], color=colors[loop_number], marker='o')
+                plt.pause(0.05)
+            #clear all lines to reduce dot lag :)
+            plt.cla()
+
+            #print lines up to current line
+            for color, line in enumerate(self.sequence[:loop_number+1]):
+                plt.plot(range(len(line)), line, color=colors[color], marker='o')
 
     
