@@ -5,11 +5,9 @@ def main():
         mode = int(input('Select Mode (1 -> 10), Quit (q), or List Modes (lm)? ').replace(' ', ''))
         if type(mode) == int:
 
-            graph = Conjecture(number_range=(get_start_num('vars.txt'), 20), rand_color=True, make_sequence=True)
+            graph = Conjecture(number_range=(int(input('start number: ')), int(input('how many numbers :) ?'))), rand_color=True, make_sequence=True, do_graph=True)
             print(graph)
-
-            if mode == 2:
-                graph.draw_graph()
+            graph.draw_graph()
 
         elif mode.lower()[0] == 'q':
             break
